@@ -128,13 +128,14 @@ def image_data_from_dict(dictionary):
 
 distro_map, aliases = image_data_from_dict(
     yaml.safe_load(open('/usr/share/blend/images.yaml')))
-tmp = image_data_from_dict(yaml.safe_load(open('system.yaml'))['images'])
+tmp = image_data_from_dict(yaml.safe_load(open('/system.yaml'))['images'])
 distro_map += tmp[0]
 aliases += tmp[1]
-tmp += image_data_from_dict(yaml.safe_load(
-    open(f'{os.getenv('XDG_CONFIG_HOME')}/blend/images.yaml')))
-distro_map += tmp[0]
-aliases += tmp[1]
+if os.path.exists(f'{os.getenv('XDG_CONFIG_HOME')}/blend/images.yaml'):
+    tmp = image_data_from_dict(yaml.safe_load(
+        open(f'{os.getenv('XDG_CONFIG_HOME')}/blend/images.yaml')))
+    distro_map += tmp[0]
+    aliases += tmp[1]
 
 default_distro = 'arch-linux'
 
