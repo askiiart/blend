@@ -27,6 +27,7 @@ import getpass
 import pexpect
 import argparse
 import subprocess
+import yaml
 
 __version = '2.0.0'
 
@@ -93,14 +94,14 @@ def podman_it_remover(cmd: list):
 # END
 
 
-distro_map = {
-    'arch-linux': 'quay.io/toolbx/arch-toolbox:latest',
-    'debian': 'quay.io/toolbx-images/debian-toolbox:testing',
-    'fedora-42': 'quay.io/fedora/fedora-toolbox:42',
-    'centos': 'quay.io/toolbx-images/centos-toolbox:latest',
-    'ubuntu-22.04': 'quay.io/toolbx/ubuntu-toolbox:22.04',
-    'ubuntu-24.04': 'quay.io/toolbx/ubuntu-toolbox:24.04',
-}
+distro_map = yaml.safe_load(open('/usr/share/blend/images.yaml'))
+if os.path.exists(f'/etc/blend/images.yaml'):
+    distro_map += yaml.safe_load(
+        open(f'{os.getenv('XDG_CONFIG_HOME')}/blend/images.yaml'))
+
+if os.path.exists(f'{os.getenv('XDG_CONFIG_HOME')}/blend/images.yaml'):
+    distro_map += yaml.safe_load(
+        open(f'{os.getenv('XDG_CONFIG_HOME')}/blend/images.yaml'))
 
 default_distro = 'arch-linux'
 
