@@ -1,6 +1,18 @@
-arch-linux: quay.io/toolbx/arch-toolbox:latest
-debian: quay.io/toolbx-images/debian-toolbox:testing
-fedora-42: quay.io/fedora/fedora-toolbox:42
-centos: quay.io/toolbx-images/centos-toolbox:latest
-ubuntu-22.04: quay.io/toolbx/ubuntu-toolbox:22.04
-ubuntu-24.04: quay.io/toolbx/ubuntu-toolbox:24.04
+arch-linux:
+  image: quay.io/toolbx/arch-toolbox:latest
+  aliases:
+    - arch
+debian:
+  image: quay.io/toolbx-images/debian-toolbox:testing
+fedora-42:
+  image: quay.io/fedora/fedora-toolbox:42
+  aliases:
+    - fedora
+centos:
+  image: quay.io/toolbx-images/centos-toolbox:latest
+ubuntu-22.04:
+  image: quay.io/toolbx/ubuntu-toolbox:22.04
+ubuntu-24.04:
+  image: quay.io/toolbx/ubuntu-toolbox:24.04
+  aliases:
+    - ubuntu

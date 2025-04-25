@@ -93,20 +93,53 @@ def podman_it_remover(cmd: list):
 
 # END
 
+# TODO: fix temp paths before committing
 
-distro_map = yaml.safe_load(open('/usr/share/blend/images.yaml'))
-if os.path.exists(f'/etc/blend/images.yaml'):
-    distro_map += yaml.safe_load(
-        open(f'{os.getenv('XDG_CONFIG_HOME')}/blend/images.yaml'))
 
-if os.path.exists(f'{os.getenv('XDG_CONFIG_HOME')}/blend/images.yaml'):
-    distro_map += yaml.safe_load(
-        open(f'{os.getenv('XDG_CONFIG_HOME')}/blend/images.yaml'))
+def image_data_from_dict(dictionary):
+    '''
+    Returns a distro map and aliases from a dict in this format:
+
+    ```
+    {'arch-linux': {'image': 'quay.io/toolbx/arch-toolbox:latest', 'aliases': ['arch']}}
+    ```
+
+    which is loaded in from yaml config files in this format:
+
+    ```yaml
+    arch-linux:
+      image: "quay.io/toolbx/arch-toolbox:latest"
+      aliases:
+        - arch
+    ```
+    '''
+    distro_map = {}
+    aliases = {}
+
+    for distro in dictionary.keys():
+        distro_map[distro] = dictionary[distro]['image']
+        try:
+            aliases[distro] = dictionary[distro]['aliases']
+        except KeyError:
+            pass
+
+    return (distro_map, aliases)
+
+
+distro_map, aliases = image_data_from_dict(
+    yaml.safe_load(open('/usr/share/blend/images.yaml')))
+tmp = image_data_from_dict(yaml.safe_load(open('system.yaml'))['images'])
+distro_map += tmp[0]
+aliases += tmp[1]
+tmp += image_data_from_dict(yaml.safe_load(
+    open(f'{os.getenv('XDG_CONFIG_HOME')}/blend/images.yaml')))
+distro_map += tmp[0]
+aliases += tmp[1]
 
 default_distro = 'arch-linux'
 
 
-def get_distro():
+def get_image():
     try:
         return distro_map[args.distro]
     except:
@@ -222,7 +255,7 @@ def core_create_container():
                            '--userns', 'keep-id',
                            '--annotation', 'run.oci.keep_original_groups=1'])
 
-    podman_command.extend([get_distro()])
+    podman_command.extend([get_image()])
 
     # User (for init-blend)
     podman_command.extend(['--uid', str(os.geteuid())])
