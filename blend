@@ -293,9 +293,6 @@ def core_run_container(cmd):
 
 
 def core_install_pkg(pkg):
-    if args.distro == 'arch':
-        args.distro = 'arch-linux'
-
     if args.distro.startswith('fedora-'):
         if args.noconfirm == True:
             core_run_container(f'sudo dnf -y install {pkg}')
@@ -322,9 +319,6 @@ def core_install_pkg(pkg):
 
 
 def core_remove_pkg(pkg):
-    if args.distro == 'arch':
-        args.distro = 'arch-linux'
-
     if args.distro.startswith('fedora-'):
         if args.noconfirm == True:
             core_run_container(f'sudo dnf -y remove {pkg}')
@@ -344,9 +338,6 @@ def core_remove_pkg(pkg):
 
 
 def core_search_pkg(pkg):
-    if args.distro == 'arch':
-        args.distro = 'arch-linux'
-
     if args.distro.startswith('fedora-'):
         core_run_container(f'dnf search {pkg}')
     elif args.distro == 'arch-linux':
@@ -358,9 +349,6 @@ def core_search_pkg(pkg):
 
 
 def core_show_pkg(pkg):
-    if args.distro == 'arch':
-        args.distro = 'arch-linux'
-
     if args.distro.startswith('fedora-'):
         core_run_container(f'dnf info {pkg}')
     elif args.distro == 'arch-linux':
@@ -415,9 +403,6 @@ def show_blend():
 
 
 def sync_blends():
-    if args.distro == 'arch':
-        args.distro = 'arch-linux'
-
     if args.distro.startswith('fedora-'):
         core_run_container(f'dnf makecache')
     elif args.distro == 'arch-linux':
@@ -427,9 +412,6 @@ def sync_blends():
 
 
 def update_blends():
-    if args.distro == 'arch':
-        args.distro = 'arch-linux'
-
     if args.distro.startswith('fedora-'):
         if args.noconfirm == True:
             core_run_container(f'sudo dnf -y upgrade')
@@ -494,7 +476,6 @@ def enter_container():
 
 def create_container():
     for container in args.pkg:
-        container = 'ubuntu-24.04' if container == 'ubuntu-24.04-lts' else container
         args.container_name = container
         if container in distro_map.keys() and distro_input == None:
             args.distro = container
@@ -578,6 +559,10 @@ if len(sys.argv) == 1:
     exit()
 
 args = parser.parse_intermixed_args()
+if args.distro not in distro_map.keys():
+    for (distro, al) in aliases:
+        if args.distro in al:
+            args.distro = distro
 
 command = command_map[args.command]
 
